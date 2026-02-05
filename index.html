@@ -1,48 +1,628 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Reconhecimento Facial</title>
-  <style>
-    video, canvas { display: block; margin: 10px auto; }
-    button { display: block; margin: 10px auto; padding: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ponto Eletrônico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        h1 i {
+            color: var(--secondary-color);
+        }
+        
+        .subtitle {
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .card-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        .employee-info {
+            background-color: #f8f9fa;
+            border-left-color: var(--success-color);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .type-entrada {
+            color: var(--success-color);
+        }
+        
+        .type-saida {
+            color: var(--danger-color);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #d5f4e6;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .alert-error {
+            background-color: #fadbd8;
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .alert-warning {
+            background-color: #fef5e7;
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h2 style="text-align:center;">Sistema de Reconhecimento Facial</h2>
-  <video id="video" width="320" height="240" autoplay></video>
-  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-  <button onclick="captureAndSend()">Registrar</button>
-  <p id="result" style="text-align:center;"></p>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-fingerprint"></i> Registro de Ponto Eletrônico</h1>
+            <p class="subtitle">Utilize seu número de identificação (RFID) para registrar seu ponto</p>
+        </header>
+        
+        <div id="alert-message" class="alert" style="display: none;"></div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-id-card"></i> Identificação</h2>
+            <div class="form-group">
+                <label for="employee-id">Número de Identificação (RFID)</label>
+                <div class="input-wrapper">
+                    <input type="text" id="employee-id" placeholder="Digite ou passe o cartão RFID" autofocus>
+                    <div class="input-icon"><i class="fas fa-id-badge"></i></div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button id="search-btn" class="btn-primary">
+                    <i class="fas fa-search"></i> Buscar Funcionário
+                </button>
+                <button id="clear-btn" class="btn-secondary">
+                    <i class="fas fa-eraser"></i> Limpar
+                </button>
+            </div>
+        </div>
+        
+        <div id="employee-card" class="card employee-info" style="display: none;">
+            <h2 class="card-title"><i class="fas fa-user-tie"></i> Dados do Funcionário</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Funcionário</div>
+                    <div id="employee-name" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Matrícula</div>
+                    <div id="employee-registration" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Hora Atual</div>
+                    <div id="current-time" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Data Atual</div>
+                    <div id="current-date" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Entrada</div>
+                    <div id="entry-time" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Saída</div>
+                    <div id="exit-time" class="info-value">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tipo de Registro</div>
+                    <div id="register-type" class="info-value">-</div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button id="register-btn" class="btn-success">
+                    <i class="fas fa-check-circle"></i> Registrar Ponto
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Sistema de Registro de Ponto &copy; 2023 | Desenvolvido para controle de jornada de trabalho</p>
+    </footer>
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const result = document.getElementById('result');
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => alert("Erro ao acessar a câmera: " + err));
-
-    function captureAndSend() {
-      const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL('image/png');
-
-      fetch('https://docs.google.com/spreadsheets/d/1UzzuE4kERhznDw76NuAaHjXxMbWYqNXshLle5ZZ4eHo/edit?usp=sharing', {
-        method: 'POST',
-        body: JSON.stringify({ image: imageData }),
-        headers: { 'Content-Type': 'application/json' }
-      })
-      .then(res => res.json())
-      .then(data => {
-        result.innerText = data.message;
-      })
-      .catch(err => {
-        result.innerText = "Erro ao enviar imagem.";
-        console.error(err);
-      });
-    }
-  </script>
+    <script>
+        // URL do seu Google Apps Script Web App
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyis00NU38QAk1y3rORSM7hr_7xjph5ZbErDwavcT6UwBN0KRIuGYk4FxE4LO0etg1szA/exec";
+        
+        // Elementos da interface
+        const employeeIdInput = document.getElementById('employee-id');
+        const searchBtn = document.getElementById('search-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const employeeCard = document.getElementById('employee-card');
+        const alertMessage = document.getElementById('alert-message');
+        
+        // Elementos para exibir os dados do funcionário
+        const employeeName = document.getElementById('employee-name');
+        const employeeRegistration = document.getElementById('employee-registration');
+        const currentTime = document.getElementById('current-time');
+        const currentDate = document.getElementById('current-date');
+        const entryTime = document.getElementById('entry-time');
+        const exitTime = document.getElementById('exit-time');
+        const registerType = document.getElementById('register-type');
+        
+        // Dados atuais do funcionário
+        let currentEmployeeData = null;
+        
+        // Atualizar hora e data atuais
+        function updateCurrentDateTime() {
+            const now = new Date();
+            
+            // Formatar hora
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            currentTime.textContent = `${hours}:${minutes}:${seconds}`;
+            
+            // Formatar data
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            currentDate.textContent = `${day}/${month}/${year}`;
+            
+            // Atualizar a cada segundo
+            setTimeout(updateCurrentDateTime, 1000);
+        }
+        
+        // Exibir mensagem de alerta
+        function showAlert(message, type) {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
+            
+            // Auto-esconder após 5 segundos para mensagens de sucesso
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Limpar formulário e dados
+        function clearForm() {
+            employeeIdInput.value = '';
+            employeeCard.style.display = 'none';
+            currentEmployeeData = null;
+            employeeIdInput.focus();
+            alertMessage.style.display = 'none';
+        }
+        
+        // Buscar dados do funcionário
+        async function searchEmployee() {
+            const employeeId = employeeIdInput.value.trim();
+            
+            if (!employeeId) {
+                showAlert('Por favor, informe o número de identificação (RFID).', 'warning');
+                employeeIdInput.focus();
+                return;
+            }
+            
+            // Mostrar indicador de carregamento
+            const originalBtnText = searchBtn.innerHTML;
+            searchBtn.innerHTML = '<span class="spinner"></span> Buscando...';
+            searchBtn.disabled = true;
+            
+            try {
+                // Chamar o Web App para buscar dados do funcionário
+                const response = await fetch(`${WEB_APP_URL}?action=search&rfid=${encodeURIComponent(employeeId)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na rede: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentEmployeeData = data.employeeData;
+                    
+                    // Preencher os dados do funcionário
+                    employeeName.textContent = currentEmployeeData.Funcionário || '-';
+                    employeeRegistration.textContent = currentEmployeeData.Matrícula || '-';
+                    entryTime.textContent = currentEmployeeData.Entrada || '-';
+                    exitTime.textContent = currentEmployeeData.Saída || '-';
+                    
+                    // Definir tipo de registro (Entrada ou Saída)
+                    const registerTypeText = currentEmployeeData['Tipo de Registro'] || 'Entrada';
+                    registerType.textContent = registerTypeText;
+                    
+                    // Aplicar cor de acordo com o tipo de registro
+                    if (registerTypeText.toLowerCase() === 'entrada') {
+                        registerType.className = 'info-value type-entrada';
+                    } else {
+                        registerType.className = 'info-value type-saida';
+                    }
+                    
+                    // Mostrar o card com as informações
+                    employeeCard.style.display = 'block';
+                    showAlert('Funcionário encontrado com sucesso!', 'success');
+                    
+                } else {
+                    showAlert(data.message || 'Funcionário não encontrado. Verifique o número de identificação.', 'error');
+                    employeeCard.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('Erro ao buscar funcionário:', error);
+                showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+                employeeCard.style.display = 'none';
+            } finally {
+                // Restaurar botão
+                searchBtn.innerHTML = originalBtnText;
+                searchBtn.disabled = false;
+            }
+        }
+        
+        // Registrar ponto do funcionário
+        async function registerCheckpoint() {
+            if (!currentEmployeeData) {
+                showAlert('Nenhum funcionário selecionado. Busque um funcionário primeiro.', 'warning');
+                return;
+            }
+            
+            // Mostrar indicador de carregamento
+            const originalBtnText = registerBtn.innerHTML;
+            registerBtn.innerHTML = '<span class="spinner"></span> Registrando...';
+            registerBtn.disabled = true;
+            
+            try {
+                // Preparar dados para envio
+                const now = new Date();
+                const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+                const formattedTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                
+                const requestData = {
+                    action: 'register',
+                    rfid: employeeIdInput.value.trim(),
+                    employeeName: currentEmployeeData.Funcionário,
+                    registration: currentEmployeeData.Matrícula,
+                    date: formattedDate,
+                    time: formattedTime,
+                    registerType: currentEmployeeData['Tipo de Registro']
+                };
+                
+                // Chamar o Web App para registrar o ponto
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na rede: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Ponto registrado com sucesso!', 'success');
+                    
+                    // Atualizar dados na tela
+                    if (currentEmployeeData['Tipo de Registro'].toLowerCase() === 'entrada') {
+                        entryTime.textContent = formattedTime;
+                    } else {
+                        exitTime.textContent = formattedTime;
+                    }
+                    
+                    // Aguardar um momento e limpar o formulário
+                    setTimeout(() => {
+                        clearForm();
+                    }, 2000);
+                    
+                } else {
+                    showAlert(data.message || 'Erro ao registrar ponto. Tente novamente.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao registrar ponto:', error);
+                showAlert('Erro ao conectar com o servidor. Tente novamente.', 'error');
+            } finally {
+                // Restaurar botão
+                registerBtn.innerHTML = originalBtnText;
+                registerBtn.disabled = false;
+            }
+        }
+        
+        // Event Listeners
+        searchBtn.addEventListener('click', searchEmployee);
+        clearBtn.addEventListener('click', clearForm);
+        registerBtn.addEventListener('click', registerCheckpoint);
+        
+        // Permitir busca pressionando Enter
+        employeeIdInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchEmployee();
+            }
+        });
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDateTime();
+            employeeIdInput.focus();
+            
+            // Configurar data e hora iniciais
+            const now = new Date();
+            const formattedDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const formattedTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+            
+            currentDate.textContent = formattedDate;
+            currentTime.textContent = formattedTime;
+        });
+        
+        // Simulação de dados para demonstração (remova quando conectar ao Web App real)
+        // Esta função simula a resposta do servidor para testes
+        window.mockSearch = async function(employeeId) {
+            // Simular delay de rede
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Dados de exemplo
+            const mockData = {
+                "12345": {
+                    success: true,
+                    employeeData: {
+                        "Funcionário": "João Silva",
+                        "Matrícula": "MAT001",
+                        "Entrada": "08:00:00",
+                        "Saída": "",
+                        "Tipo de Registro": "Saída"
+                    }
+                },
+                "67890": {
+                    success: true,
+                    employeeData: {
+                        "Funcionário": "Maria Santos",
+                        "Matrícula": "MAT002",
+                        "Entrada": "",
+                        "Saída": "17:30:00",
+                        "Tipo de Registro": "Entrada"
+                    }
+                },
+                "54321": {
+                    success: false,
+                    message: "Funcionário não encontrado."
+                }
+            };
+            
+            return mockData[employeeId] || {
+                success: false,
+                message: "RFID não encontrado no sistema."
+            };
+        };
+        
+        // Descomente a linha abaixo para usar a simulação (e comente a chamada real no searchEmployee)
+        // window.searchEmployee = async function() { ... use mockSearch ... }
+    </script>
 </body>
 </html>
