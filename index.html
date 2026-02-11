@@ -236,6 +236,16 @@
             border-radius: 4px;
             font-size: 12px;
         }
+        
+        .url-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-top: 15px;
+            word-break: break-all;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -253,7 +263,7 @@
                 <!-- Loading -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <p style="color: #666;">Processando...</p>
+                    <p style="color: #666;">Buscando na planilha...</p>
                 </div>
                 
                 <!-- Campo RFID -->
@@ -318,21 +328,27 @@
                         ✅ REGISTRAR PONTO
                     </button>
                 </div>
+                
+                <!-- Status da conexão -->
+                <div id="statusConexao" class="url-info">
+                    🔌 Status: Aguardando...
+                </div>
             </div>
         </div>
         
         <div class="footer">
             <p>Sistema de Ponto Eletrônico</p>
-            <p style="opacity: 0.8; font-size: 12px;">Para suporte, contate o departamento pessoal</p>
+            <p style="opacity: 0.8; font-size: 12px;">Dados vinculados à planilha Google</p>
         </div>
     </div>
 
     <script>
-        // 🔧 CONFIGURAÇÃO - ÚNICA COISA QUE VOCÊ PRECISA ALTERAR
+        // 🔧 CONFIGURAÇÃO - COLE A URL DO SEU APPS SCRIPT AQUI
         const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyis00NU38QAk1y3rORSM7hr_7xjph5ZbErDwavcT6UwBN0KRIuGYk4FxE4LO0etg1szA/exec';
         
         // Estado da aplicação
         let funcionarioAtual = null;
+        let tentativas = 0;
         
         // Elementos DOM
         const cartaoInput = document.getElementById('cartaoRFID');
@@ -341,6 +357,7 @@
         const infoDiv = document.getElementById('infoFuncionario');
         const mensagemDiv = document.getElementById('mensagem');
         const loadingDiv = document.getElementById('loading');
+        const statusDiv = document.getElementById('statusConexao');
         
         // Event Listeners
         cartaoInput.addEventListener('keypress', function(e) {
@@ -352,13 +369,41 @@
         btnRegistrar.addEventListener('click', registrarPonto);
         btnLimpar.addEventListener('click', limparTudo);
         
-        // Focar no input ao carregar
+        // Inicialização
         window.onload = function() {
             cartaoInput.focus();
-            mostrarMensagem('Digite o número do cartão RFID e pressione Enter', 'info');
+            testarConexao();
         };
         
-        // Funções auxiliares
+        // Testar conexão com o Apps Script
+        async function testarConexao() {
+            statusDiv.innerHTML = '🔌 Status: Testando conexão...';
+            
+            try {
+                const response = await fetch(URL_APPS_SCRIPT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        acao: 'testar'
+                    })
+                });
+                
+                statusDiv.innerHTML = '✅ Status: Conectado ao Apps Script';
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.color = '#155724';
+                
+                mostrarMensagem('Sistema conectado à planilha!', 'success');
+                
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+                statusDiv.innerHTML = '⚠️ Status: Aguardando primeira consulta...';
+                statusDiv.style.background = '#fff3cd';
+                statusDiv.style.color = '#856404';
+            }
+        }
+        
         function mostrarMensagem(texto, tipo) {
             mensagemDiv.textContent = texto;
             mensagemDiv.className = `alert alert-${tipo}`;
@@ -372,11 +417,11 @@
         function mostrarLoading(mostrar) {
             loadingDiv.style.display = mostrar ? 'block' : 'none';
             cartaoInput.disabled = mostrar;
-            btnRegistrar.disabled = mostrar;
+            btnRegistrar.disabled = mostrar ? true : btnRegistrar.disabled;
             btnLimpar.disabled = mostrar;
         }
         
-        // 🔍 BUSCAR FUNCIONÁRIO
+        // 🔍 BUSCAR FUNCIONÁRIO NA PLANILHA REAL
         async function buscarFuncionario() {
             const cartao = cartaoInput.value.trim();
             
@@ -385,18 +430,18 @@
                 return;
             }
             
-            if (cartao.length < 3) {
-                mostrarMensagem('Número do cartão muito curto', 'warning');
-                return;
-            }
-            
             mostrarLoading(true);
             infoDiv.style.display = 'none';
+            btnRegistrar.disabled = true;
+            
+            statusDiv.innerHTML = '🔍 Status: Buscando cartão ' + cartao + '...';
             
             try {
+                console.log('Enviando requisição para Apps Script...');
+                console.log('Cartão:', cartao);
+                
                 const response = await fetch(URL_APPS_SCRIPT, {
                     method: 'POST',
-                    mode: 'no-cors', // Importante para Apps Script
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -406,65 +451,50 @@
                     })
                 });
                 
-                // Como é no-cors, não podemos ler a resposta diretamente
-                // Vamos simular que deu certo
-                console.log('Cartão enviado:', cartao);
-                
-                // Dados simulados para teste (depois será real)
-                const dadosSimulados = {
-                    success: true,
-                    funcionario: {
-                        cartao: cartao,
-                        nome: 'JOÃO DA SILVA',
-                        matricula: '12345',
-                        entradaOficial: '08:00',
-                        saidaOficial: '18:00'
-                    },
-                    dataAtual: new Date().toLocaleDateString('pt-BR'),
-                    horaAtual: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    tipoRegistro: 'Entrada',
-                    registrosHoje: 0
-                };
-                
-                processarResultado(dadosSimulados);
+                // Verificar se a resposta é JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const dados = await response.json();
+                    console.log('Resposta recebida:', dados);
+                    
+                    if (dados.success) {
+                        statusDiv.innerHTML = '✅ Status: Funcionário encontrado!';
+                        processarResultado(dados);
+                    } else {
+                        statusDiv.innerHTML = '❌ Status: ' + (dados.message || 'Cartão não encontrado');
+                        mostrarMensagem(dados.message || 'Cartão não encontrado na planilha!', 'danger');
+                        limparTudo();
+                    }
+                } else {
+                    // Se não for JSON, mostrar erro
+                    const text = await response.text();
+                    console.error('Resposta não-JSON:', text);
+                    statusDiv.innerHTML = '❌ Status: Erro na resposta do servidor';
+                    mostrarMensagem('Erro na comunicação com o servidor', 'danger');
+                }
                 
             } catch (error) {
-                console.error('Erro:', error);
-                // Mesmo com erro, vamos mostrar dados de teste
-                mostrarMensagem('Funcionário encontrado (modo teste)!', 'success');
-                
-                processarResultado({
-                    success: true,
-                    funcionario: {
-                        cartao: cartao,
-                        nome: 'JOÃO DA SILVA',
-                        matricula: '12345',
-                        entradaOficial: '08:00',
-                        saidaOficial: '18:00'
-                    },
-                    dataAtual: new Date().toLocaleDateString('pt-BR'),
-                    horaAtual: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
-                    tipoRegistro: 'Entrada',
-                    registrosHoje: 0
-                });
+                console.error('Erro completo:', error);
+                statusDiv.innerHTML = '❌ Status: Erro de conexão';
+                mostrarMensagem('Erro ao conectar com a planilha. Verifique a URL do Apps Script.', 'danger');
             } finally {
                 mostrarLoading(false);
             }
         }
         
         function processarResultado(dados) {
-            if (dados.success) {
+            if (dados.success && dados.funcionario) {
                 funcionarioAtual = dados;
                 
-                // Preencher dados
-                document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome;
-                document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula;
-                document.getElementById('dataAtual').textContent = dados.dataAtual;
-                document.getElementById('horaAtual').textContent = dados.horaAtual;
-                document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || '08:00';
-                document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || '18:00';
+                // Preencher dados REAIS da planilha
+                document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || 'Não informado';
+                document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || 'Não informado';
+                document.getElementById('dataAtual').textContent = dados.dataAtual || new Date().toLocaleDateString('pt-BR');
+                document.getElementById('horaAtual').textContent = dados.horaAtual || new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+                document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || 'Não definida';
+                document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || 'Não definida';
                 
-                // Tipo de registro
+                // Tipo de registro REAL
                 const tipoSpan = document.getElementById('tipoRegistro');
                 const tipo = dados.tipoRegistro;
                 
@@ -476,61 +506,85 @@
                     tipoSpan.className = 'status-saida';
                     tipoSpan.textContent = '📤 SAÍDA';
                     btnRegistrar.disabled = false;
-                } else {
+                } else if (tipo === 'Finalizado') {
                     tipoSpan.className = 'status-finalizado';
                     tipoSpan.textContent = '✅ FINALIZADO';
                     btnRegistrar.disabled = true;
-                    mostrarMensagem('Registros do dia já completados', 'info');
+                    mostrarMensagem('Este funcionário já registrou entrada e saída hoje', 'info');
+                } else {
+                    tipoSpan.className = 'status-finalizado';
+                    tipoSpan.textContent = tipo || 'Indefinido';
+                    btnRegistrar.disabled = true;
                 }
                 
                 infoDiv.style.display = 'block';
-                mostrarMensagem('Funcionário encontrado com sucesso!', 'success');
+                mostrarMensagem('Funcionário encontrado na planilha!', 'success');
             }
         }
         
-        // 💾 REGISTRAR PONTO
+        // 💾 REGISTRAR PONTO NA PLANILHA REAL
         async function registrarPonto() {
-            if (!funcionarioAtual) {
+            if (!funcionarioAtual || !funcionarioAtual.funcionario) {
                 mostrarMensagem('Nenhum funcionário selecionado', 'warning');
                 return;
             }
             
             mostrarLoading(true);
+            statusDiv.innerHTML = '💾 Status: Salvando registro...';
             
             try {
+                const dadosSalvar = {
+                    acao: 'salvar',
+                    cartao: funcionarioAtual.funcionario.cartao,
+                    nome: funcionarioAtual.funcionario.nome,
+                    matricula: funcionarioAtual.funcionario.matricula,
+                    data: funcionarioAtual.dataAtual,
+                    hora: funcionarioAtual.horaAtual,
+                    entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
+                    saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
+                    tipoRegistro: funcionarioAtual.tipoRegistro
+                };
+                
+                console.log('Enviando dados para salvar:', dadosSalvar);
+                
                 const response = await fetch(URL_APPS_SCRIPT, {
                     method: 'POST',
-                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        acao: 'salvar',
-                        cartao: funcionarioAtual.funcionario.cartao,
-                        nome: funcionarioAtual.funcionario.nome,
-                        matricula: funcionarioAtual.funcionario.matricula,
-                        data: funcionarioAtual.dataAtual,
-                        hora: funcionarioAtual.horaAtual,
-                        entradaOficial: funcionarioAtual.funcionario.entradaOficial,
-                        saidaOficial: funcionarioAtual.funcionario.saidaOficial,
-                        tipoRegistro: funcionarioAtual.tipoRegistro
-                    })
+                    body: JSON.stringify(dadosSalvar)
                 });
                 
-                console.log('Registro enviado com sucesso!');
-                mostrarMensagem('✅ Ponto registrado com sucesso!', 'success');
-                
-                setTimeout(() => {
-                    limparTudo();
-                }, 2000);
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const resultado = await response.json();
+                    console.log('Resposta do salvamento:', resultado);
+                    
+                    if (resultado.success) {
+                        statusDiv.innerHTML = '✅ Status: Registro salvo com sucesso!';
+                        mostrarMensagem('✅ Ponto registrado com sucesso na planilha!', 'success');
+                        
+                        setTimeout(() => {
+                            limparTudo();
+                        }, 2000);
+                    } else {
+                        statusDiv.innerHTML = '❌ Status: Erro ao salvar';
+                        mostrarMensagem('Erro ao salvar: ' + (resultado.message || 'Tente novamente'), 'danger');
+                        btnRegistrar.disabled = false;
+                    }
+                } else {
+                    const text = await response.text();
+                    console.error('Resposta não-JSON:', text);
+                    statusDiv.innerHTML = '❌ Status: Erro na resposta';
+                    mostrarMensagem('Erro na comunicação com o servidor', 'danger');
+                    btnRegistrar.disabled = false;
+                }
                 
             } catch (error) {
                 console.error('Erro ao registrar:', error);
-                mostrarMensagem('Ponto registrado com sucesso!', 'success');
-                
-                setTimeout(() => {
-                    limparTudo();
-                }, 2000);
+                statusDiv.innerHTML = '❌ Status: Erro de conexão';
+                mostrarMensagem('Erro de conexão. Verifique se o Apps Script está publicado.', 'danger');
+                btnRegistrar.disabled = false;
             } finally {
                 mostrarLoading(false);
             }
@@ -543,8 +597,20 @@
             btnRegistrar.disabled = true;
             funcionarioAtual = null;
             cartaoInput.focus();
-            mostrarMensagem('Campos limpos. Digite o próximo cartão.', 'info');
+            
+            if (statusDiv.innerHTML.includes('sucesso')) {
+                statusDiv.innerHTML = '✅ Status: Pronto para próximo registro';
+            } else {
+                statusDiv.innerHTML = '🔌 Status: Aguardando cartão...';
+            }
         }
+        
+        // Focar no input quando clicar em qualquer lugar
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                cartaoInput.focus();
+            }
+        });
     </script>
 </body>
 </html>
