@@ -558,62 +558,111 @@
         }
         
         // ============================================
-        // REGISTRAR PONTO
-        // ============================================
-        async function registrarPonto() {
-            if (!funcionarioAtual) {
-                mostrarMensagem('Nenhum funcionário selecionado', 'warning');
-                return;
-            }
+// REGISTRAR PONTO - VERSÃO CORRIGIDA
+// ============================================
+async function registrarPonto() {
+    console.log('=== INICIANDO REGISTRO DE PONTO ===');
+    
+    if (!funcionarioAtual) {
+        console.error('Nenhum funcionário selecionado');
+        mostrarMensagem('❌ Nenhum funcionário selecionado', 'warning');
+        return;
+    }
+    
+    if (!funcionarioAtual.funcionario) {
+        console.error('Dados do funcionário inválidos', funcionarioAtual);
+        mostrarMensagem('❌ Dados do funcionário inválidos', 'danger');
+        return;
+    }
+    
+    console.log('Funcionário atual:', funcionarioAtual);
+    
+    mostrarLoading(true);
+    btnRegistrar.disabled = true;
+    
+    statusIndicator.style.background = '#fbbf24';
+    statusTexto.textContent = '💾 Salvando registro...';
+    
+    try {
+        // Preparar dados para salvar
+        const agora = new Date();
+        const horaAtual = agora.toLocaleTimeString('pt-BR', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        });
+        const dataAtual = agora.toLocaleDateString('pt-BR');
+        
+        const dados = {
+            acao: 'salvar',
+            cartao: funcionarioAtual.funcionario.cartao || '',
+            nome: funcionarioAtual.funcionario.nome || '',
+            matricula: funcionarioAtual.funcionario.matricula || '',
+            data: funcionarioAtual.dataAtual || dataAtual,
+            hora: funcionarioAtual.horaAtual || horaAtual,
+            entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
+            saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
+            tipoRegistro: funcionarioAtual.tipoRegistro || ''
+        };
+        
+        console.log('📤 Enviando dados para salvar:', dados);
+        
+        // Mostrar mensagem de salvando
+        mostrarMensagem('💾 Salvando registro na planilha...', 'info');
+        
+        // Chamar API
+        const resultado = await chamarAPI(dados);
+        
+        console.log('📥 Resposta do servidor:', resultado);
+        
+        if (resultado && resultado.success) {
+            console.log('✅ Registro salvo com sucesso!');
             
-            mostrarLoading(true);
-            statusIndicator.style.background = '#fbbf24';
-            statusTexto.textContent = 'Salvando registro...';
+            statusIndicator.style.background = '#48bb78';
+            statusTexto.textContent = '✅ Registro salvo!';
             
-            try {
-                const dados = {
-                    acao: 'salvar',
-                    cartao: funcionarioAtual.funcionario.cartao,
-                    nome: funcionarioAtual.funcionario.nome,
-                    matricula: funcionarioAtual.funcionario.matricula,
-                    data: funcionarioAtual.dataAtual,
-                    hora: funcionarioAtual.horaAtual,
-                    entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
-                    saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
-                    tipoRegistro: funcionarioAtual.tipoRegistro
-                };
-                
-                console.log('Salvando registro:', dados);
-                
-                const resultado = await chamarAPI(dados);
-                console.log('Resultado do salvamento:', resultado);
-                
-                if (resultado.success) {
-                    statusIndicator.style.background = '#48bb78';
-                    statusTexto.textContent = 'Registro salvo!';
-                    mostrarMensagem('✅ Ponto registrado com sucesso na planilha!', 'success');
-                    
-                    setTimeout(() => {
-                        limparTudo();
-                    }, 2000);
-                } else {
-                    statusIndicator.style.background = '#f56565';
-                    statusTexto.textContent = 'Erro ao salvar';
-                    mostrarMensagem('Erro ao salvar: ' + (resultado.message || 'Tente novamente'), 'danger');
-                    btnRegistrar.disabled = false;
-                }
-                
-            } catch (error) {
-                console.error('Erro ao registrar:', error);
-                statusIndicator.style.background = '#f56565';
-                statusTexto.textContent = 'Erro no salvamento';
-                mostrarMensagem('Erro ao conectar com a planilha. Tente novamente.', 'danger');
-                btnRegistrar.disabled = false;
-            } finally {
-                mostrarLoading(false);
-            }
+            mostrarMensagem('✅ ' + (resultado.message || 'Ponto registrado com sucesso!'), 'success');
+            
+            // Limpar após 2 segundos
+            setTimeout(() => {
+                limparTudo();
+                cartaoInput.focus();
+                mostrarMensagem('Pronto para próximo registro', 'info');
+            }, 2000);
+            
+        } else {
+            console.error('❌ Erro no salvamento:', resultado);
+            
+            statusIndicator.style.background = '#f56565';
+            statusTexto.textContent = '❌ Erro ao salvar';
+            
+            mostrarMensagem(
+                resultado?.message || '❌ Erro ao salvar registro. Tente novamente.', 
+                'danger'
+            );
+            
+            btnRegistrar.disabled = false;
         }
         
+    } catch (error) {
+        console.error('❌ Erro na requisição:', error);
+        console.error('Stack:', error.stack);
+        
+        statusIndicator.style.background = '#f56565';
+        statusTexto.textContent = '❌ Erro de conexão';
+        
+        mostrarMensagem(
+            '❌ Erro ao conectar com a planilha. Verifique sua conexão e tente novamente.',
+            'danger'
+        );
+        
+        btnRegistrar.disabled = false;
+        
+    } finally {
+        mostrarLoading(false);
+        console.log('=== FIM DO REGISTRO ===');
+    }
+}
         // ============================================
         // FUNÇÕES AUXILIARES
         // ============================================
