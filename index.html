@@ -387,7 +387,7 @@
 
     <script>
         // 🔧 CONFIGURAÇÃO - URL DO SEU APPS SCRIPT
-        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbywFxfc_wtyQmpJTIFzZV7A78dlQ65yYcQjY3hN2hTqB15hDUMf-9YHLCqZDKbZ5wigQw/exec';
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwMoQyDMBKhfjUD54G8FvumCJ65Qen2lgZ5DGczIEJFsebRid7iUmUirS1IJKE2unqU/exec';
         
         // Estado da aplicação
         let funcionarioAtual = null;
@@ -557,111 +557,155 @@
             mostrarMensagem('Funcionário encontrado na planilha!', 'success');
         }
         
-        // ============================================
+// ============================================
 // REGISTRAR PONTO - VERSÃO CORRIGIDA
 // ============================================
 async function registrarPonto() {
-    console.log('=== INICIANDO REGISTRO DE PONTO ===');
-    
-    if (!funcionarioAtual) {
-        console.error('Nenhum funcionário selecionado');
+    if (!funcionarioAtual || !funcionarioAtual.funcionario) {
         mostrarMensagem('❌ Nenhum funcionário selecionado', 'warning');
         return;
     }
     
-    if (!funcionarioAtual.funcionario) {
-        console.error('Dados do funcionário inválidos', funcionarioAtual);
-        mostrarMensagem('❌ Dados do funcionário inválidos', 'danger');
+    // CONFIRMAR REGISTRO
+    const confirmar = confirm(`Confirmar registro de ${funcionarioAtual.tipoRegistro} para ${funcionarioAtual.funcionario.nome}?`);
+    if (!confirmar) {
         return;
     }
     
-    console.log('Funcionário atual:', funcionarioAtual);
-    
     mostrarLoading(true);
-    btnRegistrar.disabled = true;
-    
     statusIndicator.style.background = '#fbbf24';
     statusTexto.textContent = '💾 Salvando registro...';
     
     try {
-        // Preparar dados para salvar
-        const agora = new Date();
-        const horaAtual = agora.toLocaleTimeString('pt-BR', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false 
-        });
-        const dataAtual = agora.toLocaleDateString('pt-BR');
-        
+        // Preparar dados EXATAMENTE como o Apps Script espera
         const dados = {
-            acao: 'salvar',
-            cartao: funcionarioAtual.funcionario.cartao || '',
-            nome: funcionarioAtual.funcionario.nome || '',
-            matricula: funcionarioAtual.funcionario.matricula || '',
-            data: funcionarioAtual.dataAtual || dataAtual,
-            hora: funcionarioAtual.horaAtual || horaAtual,
+            acao: 'salvar',  // IMPORTANTE: tem que ser 'salvar'
+            cartao: funcionarioAtual.funcionario.cartao,
+            nome: funcionarioAtual.funcionario.nome,
+            matricula: funcionarioAtual.funcionario.matricula,
+            data: funcionarioAtual.dataAtual,
+            hora: funcionarioAtual.horaAtual,
             entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
             saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
-            tipoRegistro: funcionarioAtual.tipoRegistro || ''
+            tipoRegistro: funcionarioAtual.tipoRegistro,
+            timestamp: new Date().toISOString()
         };
         
-        console.log('📤 Enviando dados para salvar:', dados);
+        console.log('📤 Enviando dados para salvar:', JSON.stringify(dados, null, 2));
         
-        // Mostrar mensagem de salvando
-        mostrarMensagem('💾 Salvando registro na planilha...', 'info');
-        
-        // Chamar API
+        // CHAMADA JSONP
         const resultado = await chamarAPI(dados);
         
         console.log('📥 Resposta do servidor:', resultado);
         
-        if (resultado && resultado.success) {
-            console.log('✅ Registro salvo com sucesso!');
-            
+        if (resultado && resultado.success === true) {
+            // SUCESSO!
             statusIndicator.style.background = '#48bb78';
             statusTexto.textContent = '✅ Registro salvo!';
-            
             mostrarMensagem('✅ ' + (resultado.message || 'Ponto registrado com sucesso!'), 'success');
             
-            // Limpar após 2 segundos
+            // Limpar tudo após 2 segundos
             setTimeout(() => {
                 limparTudo();
-                cartaoInput.focus();
                 mostrarMensagem('Pronto para próximo registro', 'info');
             }, 2000);
             
         } else {
-            console.error('❌ Erro no salvamento:', resultado);
+            // ERRO
+            const erroMsg = resultado?.message || 'Erro ao salvar registro';
+            console.error('❌ Erro no salvamento:', erroMsg);
             
             statusIndicator.style.background = '#f56565';
             statusTexto.textContent = '❌ Erro ao salvar';
+            mostrarMensagem('❌ ' + erroMsg, 'danger');
             
-            mostrarMensagem(
-                resultado?.message || '❌ Erro ao salvar registro. Tente novamente.', 
-                'danger'
-            );
-            
+            // Habilitar botão novamente
             btnRegistrar.disabled = false;
         }
         
     } catch (error) {
         console.error('❌ Erro na requisição:', error);
-        console.error('Stack:', error.stack);
         
         statusIndicator.style.background = '#f56565';
         statusTexto.textContent = '❌ Erro de conexão';
-        
-        mostrarMensagem(
-            '❌ Erro ao conectar com a planilha. Verifique sua conexão e tente novamente.',
-            'danger'
-        );
+        mostrarMensagem('❌ Erro ao conectar com o servidor. Tente novamente.', 'danger');
         
         btnRegistrar.disabled = false;
         
     } finally {
         mostrarLoading(false);
-        console.log('=== FIM DO REGISTRO ===');
     }
+}
+
+// ============================================
+// FUNÇÃO CHAMAR API - CORRIGIDA
+// ============================================
+function chamarAPI(params) {
+    return new Promise((resolve, reject) => {
+        const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        
+        // Garantir que a ação está no formato correto
+        if (!params.acao) {
+            console.error('❌ Parâmetro "acao" é obrigatório!');
+            reject(new Error('Ação não especificada'));
+            return;
+        }
+        
+        console.log(`📡 Chamando API com ação: ${params.acao}`, params);
+        
+        // Criar função de callback global
+        window[callbackName] = function(data) {
+            console.log(`📡 Resposta recebida [${params.acao}]:`, data);
+            delete window[callbackName];
+            document.head.removeChild(script);
+            clearTimeout(timeout);
+            
+            if (data) {
+                resolve(data);
+            } else {
+                reject(new Error('Resposta vazia'));
+            }
+        };
+        
+        // Construir URL
+        const urlParams = new URLSearchParams();
+        
+        // Adicionar todos os parâmetros
+        Object.keys(params).forEach(key => {
+            if (params[key] !== undefined && params[key] !== null) {
+                urlParams.append(key, params[key]);
+            }
+        });
+        
+        // Adicionar callback
+        urlParams.append('callback', callbackName);
+        
+        const scriptUrl = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
+        console.log(`🌐 URL: ${scriptUrl.substring(0, 100)}...`);
+        
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        script.async = true;
+        
+        // Timeout
+        const timeout = setTimeout(() => {
+            console.error('⏰ Timeout na requisição');
+            delete window[callbackName];
+            document.head.removeChild(script);
+            reject(new Error('Timeout na requisição'));
+        }, 15000);
+        
+        script.onload = () => console.log('📡 Script carregado');
+        script.onerror = (err) => {
+            console.error('❌ Erro ao carregar script:', err);
+            clearTimeout(timeout);
+            delete window[callbackName];
+            document.head.removeChild(script);
+            reject(new Error('Erro de rede'));
+        };
+        
+        document.head.appendChild(script);
+    });
 }
         // ============================================
         // FUNÇÕES AUXILIARES
