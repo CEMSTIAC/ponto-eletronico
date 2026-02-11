@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -28,9 +28,21 @@
         
         .card {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .header {
@@ -43,6 +55,7 @@
         .header h1 {
             margin-bottom: 10px;
             font-size: 28px;
+            font-weight: 600;
         }
         
         .body {
@@ -50,148 +63,180 @@
         }
         
         .campo-rfid {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .campo-rfid label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 16px;
         }
         
         .campo-rfid input {
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 18px;
+            font-size: 20px;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
             text-align: center;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: #f7fafc;
         }
         
         .campo-rfid input:focus {
             border-color: #667eea;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+            background: white;
         }
         
         .info-funcionario {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
             margin: 20px 0;
             display: none;
-            border-left: 5px solid #28a745;
+            border-left: 6px solid #48bb78;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
         .info-item {
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: baseline;
         }
         
         .info-label {
-            font-weight: bold;
-            color: #495057;
-            display: inline-block;
-            width: 140px;
+            font-weight: 600;
+            color: #4a5568;
+            min-width: 140px;
+            font-size: 15px;
         }
         
         .info-value {
-            color: #212529;
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 500;
         }
         
         .status-entrada {
-            background: #d4edda;
-            color: #155724;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            border: 2px solid #48bb78;
         }
         
         .status-saida {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            border: 2px solid #f56565;
         }
         
         .status-finalizado {
-            background: #e2e3e5;
-            color: #383d41;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
+            background: #e2e8f0;
+            color: #1a202c;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            display: inline-block;
+            font-size: 16px;
+            border: 2px solid #a0aec0;
         }
         
         .botoes {
             display: flex;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
         
         .btn {
             flex: 1;
-            padding: 15px;
+            padding: 16px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
         }
         
         .btn-secondary {
-            background: #6c757d;
+            background: #a0aec0;
             color: white;
+            box-shadow: 0 4px 15px rgba(160,174,192,0.4);
         }
         
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
         }
         
         .alert {
-            padding: 15px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             margin-bottom: 20px;
             display: none;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
         }
         
         .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
         }
         
         .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+            background: #feebc8;
+            color: #744210;
+            border: 2px solid #ed8936;
         }
         
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: #bee3f8;
+            color: #2c5282;
+            border: 2px solid #4299e1;
         }
         
         .loading {
@@ -201,13 +246,13 @@
         }
         
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
         }
         
         @keyframes spin {
@@ -215,36 +260,30 @@
             100% { transform: rotate(360deg); }
         }
         
+        .status-badge {
+            background: #edf2f7;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: #4a5568;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
         .footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
             color: white;
             font-size: 14px;
         }
         
-        .hint {
-            font-size: 12px;
-            color: #6c757d;
-            text-align: center;
-            margin-top: 8px;
-        }
-        
         kbd {
-            background: #212529;
+            background: #2d3748;
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
-        .url-info {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            margin-top: 15px;
-            word-break: break-all;
-            color: #666;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            border: 1px solid #4a5568;
         }
     </style>
 </head>
@@ -253,7 +292,7 @@
         <div class="card">
             <div class="header">
                 <h1>⏰ REGISTRO DE PONTO</h1>
-                <p style="opacity: 0.9; margin: 0;">Passe o cartão RFID ou digite o número</p>
+                <p style="opacity: 0.95; margin: 0; font-size: 16px;">Sistema vinculado à planilha Google</p>
             </div>
             
             <div class="body">
@@ -263,7 +302,7 @@
                 <!-- Loading -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <p style="color: #666;">Buscando na planilha...</p>
+                    <p style="color: #4a5568; font-weight: 600;">Conectando à planilha...</p>
                 </div>
                 
                 <!-- Campo RFID -->
@@ -274,14 +313,17 @@
                            placeholder="Digite ou passe o cartão"
                            autocomplete="off"
                            autofocus>
-                    <div class="hint">
-                        Pressione <kbd>Enter</kbd> após digitar o número
+                    <div style="text-align: center; margin-top: 12px; color: #718096;">
+                        Pressione <kbd>Enter</kbd> para buscar
                     </div>
                 </div>
                 
                 <!-- Informações do Funcionário -->
                 <div id="infoFuncionario" class="info-funcionario">
-                    <h3 style="margin-bottom: 15px; color: #28a745;">✅ Funcionário Encontrado</h3>
+                    <h3 style="margin-bottom: 20px; color: #2c5282; display: flex; align-items: center; gap: 10px;">
+                        <span style="background: #48bb78; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px;">ENCONTRADO</span>
+                        Dados do Funcionário
+                    </h3>
                     
                     <div class="info-item">
                         <span class="info-label">Nome:</span>
@@ -329,26 +371,27 @@
                     </button>
                 </div>
                 
-                <!-- Status da conexão -->
-                <div id="statusConexao" class="url-info">
-                    🔌 Status: Aguardando...
+                <!-- Status da API -->
+                <div id="statusAPI" class="status-badge" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span id="statusIndicator" style="width: 10px; height: 10px; background: #fbbf24; border-radius: 50%; display: inline-block;"></span>
+                    <span id="statusTexto">Inicializando...</span>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>Sistema de Ponto Eletrônico</p>
-            <p style="opacity: 0.8; font-size: 12px;">Dados vinculados à planilha Google</p>
+            <p style="font-weight: 600;">Sistema de Ponto Eletrônico</p>
+            <p style="opacity: 0.9; font-size: 13px;">Dados em tempo real • Google Sheets</p>
         </div>
     </div>
 
     <script>
-        // 🔧 CONFIGURAÇÃO - COLE A URL DO SEU APPS SCRIPT AQUI
-        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbw7m0b1UJ7vP_GKcR5GlGycCmaJG8kivCqqgFZRBLHbeBBoZVnuiWyiNuM8HjVyPKeT8g/exec';
+        // 🔧 CONFIGURAÇÃO - URL DO SEU APPS SCRIPT
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbyIOVcGv7PQ9RbckVaVL6iCGLwW_XQQ9XmLV_vgIPb7o-M3eTWZiOzwa7iPDcmmzYW44w/exec';
         
         // Estado da aplicação
         let funcionarioAtual = null;
-        let tentativas = 0;
+        let requestId = 0;
         
         // Elementos DOM
         const cartaoInput = document.getElementById('cartaoRFID');
@@ -357,53 +400,223 @@
         const infoDiv = document.getElementById('infoFuncionario');
         const mensagemDiv = document.getElementById('mensagem');
         const loadingDiv = document.getElementById('loading');
-        const statusDiv = document.getElementById('statusConexao');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTexto = document.getElementById('statusTexto');
         
-        // Event Listeners
-        cartaoInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                buscarFuncionario();
-            }
-        });
+        // ============================================
+        // FUNÇÃO PARA CHAMAR A API (JSONP)
+        // ============================================
+        function chamarAPI(params, callback) {
+            return new Promise((resolve, reject) => {
+                const callbackName = `jsonp_callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const script = document.createElement('script');
+                
+                // Criar função de callback global
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                
+                // Construir URL com parâmetros
+                const urlParams = new URLSearchParams();
+                Object.keys(params).forEach(key => {
+                    urlParams.append(key, params[key]);
+                });
+                urlParams.append('callback', callbackName);
+                
+                // Timeout
+                const timeout = setTimeout(() => {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('Timeout'));
+                }, 10000);
+                
+                script.src = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
+                script.onload = () => clearTimeout(timeout);
+                script.onerror = (err) => {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(err);
+                };
+                
+                document.body.appendChild(script);
+            });
+        }
         
-        btnRegistrar.addEventListener('click', registrarPonto);
-        btnLimpar.addEventListener('click', limparTudo);
-        
-        // Inicialização
-        window.onload = function() {
-            cartaoInput.focus();
-            testarConexao();
-        };
-        
-        // Testar conexão com o Apps Script
+        // ============================================
+        // TESTAR CONEXÃO
+        // ============================================
         async function testarConexao() {
-            statusDiv.innerHTML = '🔌 Status: Testando conexão...';
+            statusIndicator.style.background = '#fbbf24';
+            statusTexto.textContent = 'Testando conexão...';
             
             try {
-                const response = await fetch(URL_APPS_SCRIPT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        acao: 'testar'
-                    })
-                });
+                const resultado = await chamarAPI({ acao: 'testar' });
+                console.log('Teste de conexão:', resultado);
                 
-                statusDiv.innerHTML = '✅ Status: Conectado ao Apps Script';
-                statusDiv.style.background = '#d4edda';
-                statusDiv.style.color = '#155724';
-                
-                mostrarMensagem('Sistema conectado à planilha!', 'success');
-                
+                if (resultado.success) {
+                    statusIndicator.style.background = '#48bb78';
+                    statusTexto.textContent = 'Conectado à planilha';
+                    mostrarMensagem('✅ Sistema conectado à planilha Google!', 'success');
+                } else {
+                    statusIndicator.style.background = '#f56565';
+                    statusTexto.textContent = 'Erro de conexão';
+                }
             } catch (error) {
-                console.error('Erro de conexão:', error);
-                statusDiv.innerHTML = '⚠️ Status: Aguardando primeira consulta...';
-                statusDiv.style.background = '#fff3cd';
-                statusDiv.style.color = '#856404';
+                console.error('Erro no teste:', error);
+                statusIndicator.style.background = '#f56565';
+                statusTexto.textContent = 'Sem conexão';
             }
         }
         
+        // ============================================
+        // BUSCAR FUNCIONÁRIO
+        // ============================================
+        async function buscarFuncionario() {
+            const cartao = cartaoInput.value.trim();
+            
+            if (!cartao) {
+                mostrarMensagem('Digite o número do cartão RFID', 'warning');
+                return;
+            }
+            
+            mostrarLoading(true);
+            infoDiv.style.display = 'none';
+            btnRegistrar.disabled = true;
+            
+            statusIndicator.style.background = '#fbbf24';
+            statusTexto.textContent = `Buscando cartão ${cartao}...`;
+            
+            try {
+                console.log('Buscando cartão:', cartao);
+                
+                const resultado = await chamarAPI({ 
+                    acao: 'buscar', 
+                    cartao: cartao 
+                });
+                
+                console.log('Resultado da busca:', resultado);
+                
+                if (resultado.success) {
+                    statusIndicator.style.background = '#48bb78';
+                    statusTexto.textContent = 'Funcionário encontrado';
+                    funcionarioAtual = resultado;
+                    processarResultado(resultado);
+                } else {
+                    statusIndicator.style.background = '#f56565';
+                    statusTexto.textContent = 'Cartão não encontrado';
+                    mostrarMensagem(resultado.message || 'Cartão não encontrado na planilha!', 'danger');
+                    limparTudo();
+                }
+                
+            } catch (error) {
+                console.error('Erro na busca:', error);
+                statusIndicator.style.background = '#f56565';
+                statusTexto.textContent = 'Erro na consulta';
+                mostrarMensagem('Erro ao consultar a planilha. Verifique sua conexão.', 'danger');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+        
+        // ============================================
+        // PROCESSAR RESULTADO
+        // ============================================
+        function processarResultado(dados) {
+            // Preencher dados REAIS da planilha
+            document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || 'Não informado';
+            document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || 'Não informado';
+            document.getElementById('dataAtual').textContent = dados.dataAtual;
+            document.getElementById('horaAtual').textContent = dados.horaAtual;
+            document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || 'Não definida';
+            document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || 'Não definida';
+            
+            // Tipo de registro
+            const tipoSpan = document.getElementById('tipoRegistro');
+            const tipo = dados.tipoRegistro;
+            
+            tipoSpan.className = '';
+            if (tipo === 'Entrada') {
+                tipoSpan.className = 'status-entrada';
+                tipoSpan.textContent = '📥 ENTRADA';
+                btnRegistrar.disabled = false;
+            } else if (tipo === 'Saída') {
+                tipoSpan.className = 'status-saida';
+                tipoSpan.textContent = '📤 SAÍDA';
+                btnRegistrar.disabled = false;
+            } else {
+                tipoSpan.className = 'status-finalizado';
+                tipoSpan.textContent = '✅ FINALIZADO';
+                btnRegistrar.disabled = true;
+                mostrarMensagem('Este funcionário já completou os registros do dia.', 'info');
+            }
+            
+            infoDiv.style.display = 'block';
+            mostrarMensagem('Funcionário encontrado na planilha!', 'success');
+        }
+        
+        // ============================================
+        // REGISTRAR PONTO
+        // ============================================
+        async function registrarPonto() {
+            if (!funcionarioAtual) {
+                mostrarMensagem('Nenhum funcionário selecionado', 'warning');
+                return;
+            }
+            
+            mostrarLoading(true);
+            statusIndicator.style.background = '#fbbf24';
+            statusTexto.textContent = 'Salvando registro...';
+            
+            try {
+                const dados = {
+                    acao: 'salvar',
+                    cartao: funcionarioAtual.funcionario.cartao,
+                    nome: funcionarioAtual.funcionario.nome,
+                    matricula: funcionarioAtual.funcionario.matricula,
+                    data: funcionarioAtual.dataAtual,
+                    hora: funcionarioAtual.horaAtual,
+                    entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
+                    saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
+                    tipoRegistro: funcionarioAtual.tipoRegistro
+                };
+                
+                console.log('Salvando registro:', dados);
+                
+                const resultado = await chamarAPI(dados);
+                console.log('Resultado do salvamento:', resultado);
+                
+                if (resultado.success) {
+                    statusIndicator.style.background = '#48bb78';
+                    statusTexto.textContent = 'Registro salvo!';
+                    mostrarMensagem('✅ Ponto registrado com sucesso na planilha!', 'success');
+                    
+                    setTimeout(() => {
+                        limparTudo();
+                    }, 2000);
+                } else {
+                    statusIndicator.style.background = '#f56565';
+                    statusTexto.textContent = 'Erro ao salvar';
+                    mostrarMensagem('Erro ao salvar: ' + (resultado.message || 'Tente novamente'), 'danger');
+                    btnRegistrar.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('Erro ao registrar:', error);
+                statusIndicator.style.background = '#f56565';
+                statusTexto.textContent = 'Erro no salvamento';
+                mostrarMensagem('Erro ao conectar com a planilha. Tente novamente.', 'danger');
+                btnRegistrar.disabled = false;
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+        
+        // ============================================
+        // FUNÇÕES AUXILIARES
+        // ============================================
         function mostrarMensagem(texto, tipo) {
             mensagemDiv.textContent = texto;
             mensagemDiv.className = `alert alert-${tipo}`;
@@ -421,176 +634,6 @@
             btnLimpar.disabled = mostrar;
         }
         
-        // 🔍 BUSCAR FUNCIONÁRIO NA PLANILHA REAL
-        async function buscarFuncionario() {
-            const cartao = cartaoInput.value.trim();
-            
-            if (!cartao) {
-                mostrarMensagem('Digite o número do cartão RFID', 'warning');
-                return;
-            }
-            
-            mostrarLoading(true);
-            infoDiv.style.display = 'none';
-            btnRegistrar.disabled = true;
-            
-            statusDiv.innerHTML = '🔍 Status: Buscando cartão ' + cartao + '...';
-            
-            try {
-                console.log('Enviando requisição para Apps Script...');
-                console.log('Cartão:', cartao);
-                
-                const response = await fetch(URL_APPS_SCRIPT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        acao: 'buscar',
-                        cartao: cartao
-                    })
-                });
-                
-                // Verificar se a resposta é JSON
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const dados = await response.json();
-                    console.log('Resposta recebida:', dados);
-                    
-                    if (dados.success) {
-                        statusDiv.innerHTML = '✅ Status: Funcionário encontrado!';
-                        processarResultado(dados);
-                    } else {
-                        statusDiv.innerHTML = '❌ Status: ' + (dados.message || 'Cartão não encontrado');
-                        mostrarMensagem(dados.message || 'Cartão não encontrado na planilha!', 'danger');
-                        limparTudo();
-                    }
-                } else {
-                    // Se não for JSON, mostrar erro
-                    const text = await response.text();
-                    console.error('Resposta não-JSON:', text);
-                    statusDiv.innerHTML = '❌ Status: Erro na resposta do servidor';
-                    mostrarMensagem('Erro na comunicação com o servidor', 'danger');
-                }
-                
-            } catch (error) {
-                console.error('Erro completo:', error);
-                statusDiv.innerHTML = '❌ Status: Erro de conexão';
-                mostrarMensagem('Erro ao conectar com a planilha. Verifique a URL do Apps Script.', 'danger');
-            } finally {
-                mostrarLoading(false);
-            }
-        }
-        
-        function processarResultado(dados) {
-            if (dados.success && dados.funcionario) {
-                funcionarioAtual = dados;
-                
-                // Preencher dados REAIS da planilha
-                document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || 'Não informado';
-                document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || 'Não informado';
-                document.getElementById('dataAtual').textContent = dados.dataAtual || new Date().toLocaleDateString('pt-BR');
-                document.getElementById('horaAtual').textContent = dados.horaAtual || new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
-                document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || 'Não definida';
-                document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || 'Não definida';
-                
-                // Tipo de registro REAL
-                const tipoSpan = document.getElementById('tipoRegistro');
-                const tipo = dados.tipoRegistro;
-                
-                if (tipo === 'Entrada') {
-                    tipoSpan.className = 'status-entrada';
-                    tipoSpan.textContent = '📥 ENTRADA';
-                    btnRegistrar.disabled = false;
-                } else if (tipo === 'Saída') {
-                    tipoSpan.className = 'status-saida';
-                    tipoSpan.textContent = '📤 SAÍDA';
-                    btnRegistrar.disabled = false;
-                } else if (tipo === 'Finalizado') {
-                    tipoSpan.className = 'status-finalizado';
-                    tipoSpan.textContent = '✅ FINALIZADO';
-                    btnRegistrar.disabled = true;
-                    mostrarMensagem('Este funcionário já registrou entrada e saída hoje', 'info');
-                } else {
-                    tipoSpan.className = 'status-finalizado';
-                    tipoSpan.textContent = tipo || 'Indefinido';
-                    btnRegistrar.disabled = true;
-                }
-                
-                infoDiv.style.display = 'block';
-                mostrarMensagem('Funcionário encontrado na planilha!', 'success');
-            }
-        }
-        
-        // 💾 REGISTRAR PONTO NA PLANILHA REAL
-        async function registrarPonto() {
-            if (!funcionarioAtual || !funcionarioAtual.funcionario) {
-                mostrarMensagem('Nenhum funcionário selecionado', 'warning');
-                return;
-            }
-            
-            mostrarLoading(true);
-            statusDiv.innerHTML = '💾 Status: Salvando registro...';
-            
-            try {
-                const dadosSalvar = {
-                    acao: 'salvar',
-                    cartao: funcionarioAtual.funcionario.cartao,
-                    nome: funcionarioAtual.funcionario.nome,
-                    matricula: funcionarioAtual.funcionario.matricula,
-                    data: funcionarioAtual.dataAtual,
-                    hora: funcionarioAtual.horaAtual,
-                    entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
-                    saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
-                    tipoRegistro: funcionarioAtual.tipoRegistro
-                };
-                
-                console.log('Enviando dados para salvar:', dadosSalvar);
-                
-                const response = await fetch(URL_APPS_SCRIPT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dadosSalvar)
-                });
-                
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const resultado = await response.json();
-                    console.log('Resposta do salvamento:', resultado);
-                    
-                    if (resultado.success) {
-                        statusDiv.innerHTML = '✅ Status: Registro salvo com sucesso!';
-                        mostrarMensagem('✅ Ponto registrado com sucesso na planilha!', 'success');
-                        
-                        setTimeout(() => {
-                            limparTudo();
-                        }, 2000);
-                    } else {
-                        statusDiv.innerHTML = '❌ Status: Erro ao salvar';
-                        mostrarMensagem('Erro ao salvar: ' + (resultado.message || 'Tente novamente'), 'danger');
-                        btnRegistrar.disabled = false;
-                    }
-                } else {
-                    const text = await response.text();
-                    console.error('Resposta não-JSON:', text);
-                    statusDiv.innerHTML = '❌ Status: Erro na resposta';
-                    mostrarMensagem('Erro na comunicação com o servidor', 'danger');
-                    btnRegistrar.disabled = false;
-                }
-                
-            } catch (error) {
-                console.error('Erro ao registrar:', error);
-                statusDiv.innerHTML = '❌ Status: Erro de conexão';
-                mostrarMensagem('Erro de conexão. Verifique se o Apps Script está publicado.', 'danger');
-                btnRegistrar.disabled = false;
-            } finally {
-                mostrarLoading(false);
-            }
-        }
-        
-        // 🧹 LIMPAR TUDO
         function limparTudo() {
             cartaoInput.value = '';
             infoDiv.style.display = 'none';
@@ -598,16 +641,33 @@
             funcionarioAtual = null;
             cartaoInput.focus();
             
-            if (statusDiv.innerHTML.includes('sucesso')) {
-                statusDiv.innerHTML = '✅ Status: Pronto para próximo registro';
-            } else {
-                statusDiv.innerHTML = '🔌 Status: Aguardando cartão...';
-            }
+            statusIndicator.style.background = '#48bb78';
+            statusTexto.textContent = 'Pronto para leitura';
         }
         
-        // Focar no input quando clicar em qualquer lugar
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        window.onload = function() {
+            cartaoInput.focus();
+            testarConexao();
+            
+            // Verificar conexão a cada 30 segundos
+            setInterval(testarConexao, 30000);
+        };
+        
+        cartaoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarFuncionario();
+            }
+        });
+        
+        btnRegistrar.addEventListener('click', registrarPonto);
+        btnLimpar.addEventListener('click', limparTudo);
+        
+        // Focar no input ao clicar fora
         document.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+            if (!e.target.matches('button, input, .btn, .status-badge')) {
                 cartaoInput.focus();
             }
         });
