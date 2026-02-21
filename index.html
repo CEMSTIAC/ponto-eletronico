@@ -354,8 +354,8 @@
     <div class="container">
         <div class="card">
             <div class="header">
-                <h1>⏰ REGISTRO DE PONTO</h1>
-                <p style="opacity: 0.95; margin: 0; font-size: 16px;">Sistema vinculado à planilha Google</p>
+                <h1>REGISTRO DE PONTO CEMSTIAC</h1>
+                
             </div>
             
             <div class="body">
@@ -365,7 +365,7 @@
                 <!-- Loading (ocupa largura total) -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <p style="color: #4a5568; font-weight: 600;">Conectando à planilha...</p>
+                    <p style="color: #4a5568; font-weight: 600;">Aguarde, estamos coletando seus dados...</p>
                 </div>
                 
                 <!-- Grid de 2 colunas -->
@@ -376,11 +376,11 @@
                             <label>📇 NÚMERO DO CARTÃO RFID</label>
                             <input type="text" 
                                    id="cartaoRFID" 
-                                   placeholder="Digite ou passe o cartão"
+                                   placeholder="Aproxime seu cartão sobre o leitor"
                                    autocomplete="off"
                                    autofocus>
                             <div class="hint">
-                                Pressione <kbd>Enter</kbd> ou aguarde a busca automática
+                                Aguarde a busca automática
                             </div>
                         </div>
                         
@@ -451,7 +451,7 @@
         
         <div class="footer">
             <p style="font-weight: 600;">Sistema de Ponto Eletrônico</p>
-            <p style="opacity: 0.9; font-size: 13px;">Dados em tempo real • Google Sheets</p>
+            <p style="opacity: 0.9; font-size: 13px;">Desenvolvido por Simone Pedro </p>
         </div>
     </div>
 
@@ -549,7 +549,7 @@
                     statusTexto.textContent = 'Cartão não encontrado';
                 }
             } catch (error) {
-                mostrarMensagem('Erro ao consultar planilha.', 'danger');
+                mostrarMensagem('Erro ao consultar planilha. Verifique com a Secretaria Escolar', 'danger');
                 statusIndicator.style.background = '#f56565';
                 statusTexto.textContent = 'Erro na consulta';
             } finally {
@@ -613,7 +613,7 @@
                     mostrarMensagem(resultado.message, 'danger');
                 }
             } catch (error) {
-                mostrarMensagem('Erro ao registrar.', 'danger');
+                mostrarMensagem('Erro ao registrar. Procure a Secretaria Escolar', 'danger');
             } finally {
                 mostrarLoading(false);
             }
