@@ -385,385 +385,249 @@
         </div>
     </div>
 
-    <script>
-        // 🔧 CONFIGURAÇÃO - URL DO SEU APPS SCRIPT
-        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzRK_dp2qExnDtAIh3NaC7ub1D8PUMl-kjW4cb8aJPcB3iwIcM7GktAYSBin7SxijCg/exec';
-        
-        // Estado da aplicação
-        let funcionarioAtual = null;
-        let requestId = 0;
-        
-        // Elementos DOM
-        const cartaoInput = document.getElementById('cartaoRFID');
-        const btnRegistrar = document.getElementById('btnRegistrar');
-        const btnLimpar = document.getElementById('btnLimpar');
-        const infoDiv = document.getElementById('infoFuncionario');
-        const mensagemDiv = document.getElementById('mensagem');
-        const loadingDiv = document.getElementById('loading');
-        const statusIndicator = document.getElementById('statusIndicator');
-        const statusTexto = document.getElementById('statusTexto');
-        
-        // ============================================
-        // FUNÇÃO PARA CHAMAR A API (JSONP)
-        // ============================================
-        function chamarAPI(params, callback) {
-            return new Promise((resolve, reject) => {
-                const callbackName = `jsonp_callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                const script = document.createElement('script');
-                
-                // Criar função de callback global
-                window[callbackName] = function(data) {
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    resolve(data);
-                };
-                
-                // Construir URL com parâmetros
-                const urlParams = new URLSearchParams();
-                Object.keys(params).forEach(key => {
-                    urlParams.append(key, params[key]);
-                });
-                urlParams.append('callback', callbackName);
-                
-                // Timeout
-                const timeout = setTimeout(() => {
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    reject(new Error('Timeout'));
-                }, 10000);
-                
-                script.src = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
-                script.onload = () => clearTimeout(timeout);
-                script.onerror = (err) => {
-                    clearTimeout(timeout);
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    reject(err);
-                };
-                
-                document.body.appendChild(script);
-            });
-        }
-        
-        // ============================================
-        // TESTAR CONEXÃO
-        // ============================================
-        async function testarConexao() {
-            statusIndicator.style.background = '#fbbf24';
-            statusTexto.textContent = 'Testando conexão...';
-            
-            try {
-                const resultado = await chamarAPI({ acao: 'testar' });
-                console.log('Teste de conexão:', resultado);
-                
-                if (resultado.success) {
-                    statusIndicator.style.background = '#48bb78';
-                    statusTexto.textContent = 'Conectado à planilha';
-                    mostrarMensagem('✅ Sistema conectado à planilha Google!', 'success');
-                } else {
-                    statusIndicator.style.background = '#f56565';
-                    statusTexto.textContent = 'Erro de conexão';
-                }
-            } catch (error) {
-                console.error('Erro no teste:', error);
-                statusIndicator.style.background = '#f56565';
-                statusTexto.textContent = 'Sem conexão';
-            }
-        }
-        
-        // ============================================
-        // BUSCAR FUNCIONÁRIO
-        // ============================================
-        async function buscarFuncionario() {
-            const cartao = cartaoInput.value.trim();
-            
-            if (!cartao) {
-                mostrarMensagem('Digite o número do cartão RFID', 'warning');
-                return;
-            }
-            
-            mostrarLoading(true);
-            infoDiv.style.display = 'none';
-            btnRegistrar.disabled = true;
-            
-            statusIndicator.style.background = '#fbbf24';
-            statusTexto.textContent = `Buscando cartão ${cartao}...`;
-            
-            try {
-                console.log('Buscando cartão:', cartao);
-                
-                const resultado = await chamarAPI({ 
-                    acao: 'buscar', 
-                    cartao: cartao 
-                });
-                
-                console.log('Resultado da busca:', resultado);
-                
-                if (resultado.success) {
-                    statusIndicator.style.background = '#48bb78';
-                    statusTexto.textContent = 'Funcionário encontrado';
-                    funcionarioAtual = resultado;
-                    processarResultado(resultado);
-                } else {
-                    statusIndicator.style.background = '#f56565';
-                    statusTexto.textContent = 'Cartão não encontrado';
-                    mostrarMensagem(resultado.message || 'Cartão não encontrado na planilha!', 'danger');
-                    limparTudo();
-                }
-                
-            } catch (error) {
-                console.error('Erro na busca:', error);
-                statusIndicator.style.background = '#f56565';
-                statusTexto.textContent = 'Erro na consulta';
-                mostrarMensagem('Erro ao consultar a planilha. Verifique sua conexão.', 'danger');
-            } finally {
-                mostrarLoading(false);
-            }
-        }
-        
-        // ============================================
-        // PROCESSAR RESULTADO
-        // ============================================
-        function processarResultado(dados) {
-            // Preencher dados REAIS da planilha
-            document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || 'Não informado';
-            document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || 'Não informado';
-            document.getElementById('dataAtual').textContent = dados.dataAtual;
-            document.getElementById('horaAtual').textContent = dados.horaAtual;
-            document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || 'Não definida';
-            document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || 'Não definida';
-            
-            // Tipo de registro
-            const tipoSpan = document.getElementById('tipoRegistro');
-            const tipo = dados.tipoRegistro;
-            
-            tipoSpan.className = '';
-            if (tipo === 'Entrada') {
-                tipoSpan.className = 'status-entrada';
-                tipoSpan.textContent = '📥 ENTRADA';
-                btnRegistrar.disabled = false;
-            } else if (tipo === 'Saída') {
-                tipoSpan.className = 'status-saida';
-                tipoSpan.textContent = '📤 SAÍDA';
-                btnRegistrar.disabled = false;
-            } else {
-                tipoSpan.className = 'status-finalizado';
-                tipoSpan.textContent = '✅ FINALIZADO';
-                btnRegistrar.disabled = true;
-                mostrarMensagem('Este funcionário já completou os registros do dia.', 'info');
-            }
-            
-            infoDiv.style.display = 'block';
-            mostrarMensagem('Funcionário encontrado na planilha!', 'success');
-        }
-        
+        <script>
+const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbzRK_dp2qExnDtAIh3NaC7ub1D8PUMl-kjW4cb8aJPcB3iwIcM7GktAYSBin7SxijCg/exec';
+
+let funcionarioAtual = null;
+let debounceTimer = null;
+let ultimoCartaoBuscado = null;
+
+const cartaoInput = document.getElementById('cartaoRFID');
+const btnRegistrar = document.getElementById('btnRegistrar');
+const btnLimpar = document.getElementById('btnLimpar');
+const infoDiv = document.getElementById('infoFuncionario');
+const mensagemDiv = document.getElementById('mensagem');
+const loadingDiv = document.getElementById('loading');
+const statusIndicator = document.getElementById('statusIndicator');
+const statusTexto = document.getElementById('statusTexto');
+
 // ============================================
-// REGISTRAR PONTO - VERSÃO CORRIGIDA
+// JSONP
 // ============================================
-async function registrarPonto() {
-    if (!funcionarioAtual || !funcionarioAtual.funcionario) {
-        mostrarMensagem('❌ Nenhum funcionário selecionado', 'warning');
-        return;
-    }
-    
-    // CONFIRMAR REGISTRO
-    const confirmar = confirm(`Confirmar registro de ${funcionarioAtual.tipoRegistro} para ${funcionarioAtual.funcionario.nome}?`);
-    if (!confirmar) {
-        return;
-    }
-    
-    mostrarLoading(true);
-    statusIndicator.style.background = '#fbbf24';
-    statusTexto.textContent = '💾 Salvando registro...';
-    
-    try {
-        // Preparar dados EXATAMENTE como o Apps Script espera
-        const dados = {
-            acao: 'salvar',  // IMPORTANTE: tem que ser 'salvar'
-            cartao: funcionarioAtual.funcionario.cartao,
-            nome: funcionarioAtual.funcionario.nome,
-            matricula: funcionarioAtual.funcionario.matricula,
-            data: funcionarioAtual.dataAtual,
-            hora: funcionarioAtual.horaAtual,
-            entradaOficial: funcionarioAtual.funcionario.entradaOficial || '',
-            saidaOficial: funcionarioAtual.funcionario.saidaOficial || '',
-            tipoRegistro: funcionarioAtual.tipoRegistro,
-            timestamp: new Date().toISOString()
+function chamarAPI(params) {
+    return new Promise((resolve, reject) => {
+
+        const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.head.removeChild(script);
+            clearTimeout(timeout);
+            resolve(data);
         };
-        
-        console.log('📤 Enviando dados para salvar:', JSON.stringify(dados, null, 2));
-        
-        // CHAMADA JSONP
-        const resultado = await chamarAPI(dados);
-        
-        console.log('📥 Resposta do servidor:', resultado);
-        
-        if (resultado && resultado.success === true) {
-            // SUCESSO!
+
+        const urlParams = new URLSearchParams();
+        Object.keys(params).forEach(key => {
+            if (params[key] !== undefined && params[key] !== null) {
+                urlParams.append(key, params[key]);
+            }
+        });
+
+        urlParams.append('callback', callbackName);
+
+        const script = document.createElement('script');
+        script.src = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
+        script.async = true;
+
+        const timeout = setTimeout(() => {
+            delete window[callbackName];
+            document.head.removeChild(script);
+            reject(new Error('Timeout'));
+        }, 15000);
+
+        script.onerror = () => {
+            clearTimeout(timeout);
+            delete window[callbackName];
+            document.head.removeChild(script);
+            reject(new Error('Erro de rede'));
+        };
+
+        document.head.appendChild(script);
+    });
+}
+
+// ============================================
+// BUSCA AUTOMÁTICA (SEM ENTER)
+// ============================================
+async function buscarFuncionarioAutomatico(cartao) {
+
+    if (!cartao || cartao.length < 3) return;
+
+    if (cartao === ultimoCartaoBuscado) return; // evita busca duplicada
+
+    ultimoCartaoBuscado = cartao;
+
+    mostrarLoading(true);
+    infoDiv.style.display = 'none';
+    btnRegistrar.disabled = true;
+
+    statusIndicator.style.background = '#fbbf24';
+    statusTexto.textContent = `Buscando cartão ${cartao}...`;
+
+    try {
+
+        const resultado = await chamarAPI({
+            acao: 'buscar',
+            cartao: cartao
+        });
+
+        if (resultado.success) {
+            funcionarioAtual = resultado;
+            processarResultado(resultado);
             statusIndicator.style.background = '#48bb78';
-            statusTexto.textContent = '✅ Registro salvo!';
-            mostrarMensagem('✅ ' + (resultado.message || 'Ponto registrado com sucesso!'), 'success');
-            
-            // Limpar tudo após 2 segundos
-            setTimeout(() => {
-                limparTudo();
-                mostrarMensagem('Pronto para próximo registro', 'info');
-            }, 2000);
-            
+            statusTexto.textContent = 'Funcionário encontrado';
         } else {
-            // ERRO
-            const erroMsg = resultado?.message || 'Erro ao salvar registro';
-            console.error('❌ Erro no salvamento:', erroMsg);
-            
+            limparTudo();
+            mostrarMensagem(resultado.message || 'Cartão não encontrado!', 'danger');
             statusIndicator.style.background = '#f56565';
-            statusTexto.textContent = '❌ Erro ao salvar';
-            mostrarMensagem('❌ ' + erroMsg, 'danger');
-            
-            // Habilitar botão novamente
-            btnRegistrar.disabled = false;
+            statusTexto.textContent = 'Cartão não encontrado';
         }
-        
+
     } catch (error) {
-        console.error('❌ Erro na requisição:', error);
-        
+        mostrarMensagem('Erro ao consultar planilha.', 'danger');
         statusIndicator.style.background = '#f56565';
-        statusTexto.textContent = '❌ Erro de conexão';
-        mostrarMensagem('❌ Erro ao conectar com o servidor. Tente novamente.', 'danger');
-        
-        btnRegistrar.disabled = false;
-        
+        statusTexto.textContent = 'Erro na consulta';
     } finally {
         mostrarLoading(false);
     }
 }
 
 // ============================================
-// FUNÇÃO CHAMAR API - CORRIGIDA
+// PROCESSAR RESULTADO
 // ============================================
-function chamarAPI(params) {
-    return new Promise((resolve, reject) => {
-        const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-        
-        // Garantir que a ação está no formato correto
-        if (!params.acao) {
-            console.error('❌ Parâmetro "acao" é obrigatório!');
-            reject(new Error('Ação não especificada'));
-            return;
-        }
-        
-        console.log(`📡 Chamando API com ação: ${params.acao}`, params);
-        
-        // Criar função de callback global
-        window[callbackName] = function(data) {
-            console.log(`📡 Resposta recebida [${params.acao}]:`, data);
-            delete window[callbackName];
-            document.head.removeChild(script);
-            clearTimeout(timeout);
-            
-            if (data) {
-                resolve(data);
-            } else {
-                reject(new Error('Resposta vazia'));
-            }
-        };
-        
-        // Construir URL
-        const urlParams = new URLSearchParams();
-        
-        // Adicionar todos os parâmetros
-        Object.keys(params).forEach(key => {
-            if (params[key] !== undefined && params[key] !== null) {
-                urlParams.append(key, params[key]);
-            }
-        });
-        
-        // Adicionar callback
-        urlParams.append('callback', callbackName);
-        
-        const scriptUrl = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
-        console.log(`🌐 URL: ${scriptUrl.substring(0, 100)}...`);
-        
-        const script = document.createElement('script');
-        script.src = scriptUrl;
-        script.async = true;
-        
-        // Timeout
-        const timeout = setTimeout(() => {
-            console.error('⏰ Timeout na requisição');
-            delete window[callbackName];
-            document.head.removeChild(script);
-            reject(new Error('Timeout na requisição'));
-        }, 15000);
-        
-        script.onload = () => console.log('📡 Script carregado');
-        script.onerror = (err) => {
-            console.error('❌ Erro ao carregar script:', err);
-            clearTimeout(timeout);
-            delete window[callbackName];
-            document.head.removeChild(script);
-            reject(new Error('Erro de rede'));
-        };
-        
-        document.head.appendChild(script);
-    });
+function processarResultado(dados) {
+
+    document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || '-';
+    document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || '-';
+    document.getElementById('dataAtual').textContent = dados.dataAtual;
+    document.getElementById('horaAtual').textContent = dados.horaAtual;
+    document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || '-';
+    document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || '-';
+
+    const tipoSpan = document.getElementById('tipoRegistro');
+    tipoSpan.className = '';
+
+    if (dados.tipoRegistro === 'Entrada') {
+        tipoSpan.className = 'status-entrada';
+        tipoSpan.textContent = '📥 ENTRADA';
+        btnRegistrar.disabled = false;
+    } 
+    else if (dados.tipoRegistro === 'Saída') {
+        tipoSpan.className = 'status-saida';
+        tipoSpan.textContent = '📤 SAÍDA';
+        btnRegistrar.disabled = false;
+    } 
+    else {
+        tipoSpan.className = 'status-finalizado';
+        tipoSpan.textContent = '✅ FINALIZADO';
+        btnRegistrar.disabled = true;
+    }
+
+    infoDiv.style.display = 'block';
 }
-        // ============================================
-        // FUNÇÕES AUXILIARES
-        // ============================================
-        function mostrarMensagem(texto, tipo) {
-            mensagemDiv.textContent = texto;
-            mensagemDiv.className = `alert alert-${tipo}`;
-            mensagemDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                mensagemDiv.style.display = 'none';
-            }, 5000);
-        }
-        
-        function mostrarLoading(mostrar) {
-            loadingDiv.style.display = mostrar ? 'block' : 'none';
-            cartaoInput.disabled = mostrar;
-            btnRegistrar.disabled = mostrar ? true : btnRegistrar.disabled;
-            btnLimpar.disabled = mostrar;
-        }
-        
-        function limparTudo() {
-            cartaoInput.value = '';
-            infoDiv.style.display = 'none';
-            btnRegistrar.disabled = true;
-            funcionarioAtual = null;
-            cartaoInput.focus();
-            
-            statusIndicator.style.background = '#48bb78';
-            statusTexto.textContent = 'Pronto para leitura';
-        }
-        
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-        window.onload = function() {
-            cartaoInput.focus();
-            testarConexao();
-            
-            // Verificar conexão a cada 30 segundos
-            setInterval(testarConexao, 30000);
-        };
-        
-        cartaoInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                buscarFuncionario();
-            }
+
+// ============================================
+// REGISTRAR
+// ============================================
+async function registrarPonto() {
+
+    if (!funcionarioAtual) return;
+
+    mostrarLoading(true);
+
+    try {
+
+        const resultado = await chamarAPI({
+            acao: 'salvar',
+            cartao: funcionarioAtual.funcionario.cartao,
+            nome: funcionarioAtual.funcionario.nome,
+            matricula: funcionarioAtual.funcionario.matricula
         });
-        
-        btnRegistrar.addEventListener('click', registrarPonto);
-        btnLimpar.addEventListener('click', limparTudo);
-        
-        // Focar no input ao clicar fora
-        document.addEventListener('click', function(e) {
-            if (!e.target.matches('button, input, .btn, .status-badge')) {
-                cartaoInput.focus();
-            }
-        });
-    </script>
+
+        if (resultado.success) {
+            mostrarMensagem('✅ Ponto registrado com sucesso!', 'success');
+            setTimeout(limparTudo, 2000);
+        } else {
+            mostrarMensagem(resultado.message, 'danger');
+        }
+
+    } catch (error) {
+        mostrarMensagem('Erro ao registrar.', 'danger');
+    } finally {
+        mostrarLoading(false);
+    }
+}
+
+// ============================================
+// UTILITÁRIOS
+// ============================================
+function mostrarMensagem(texto, tipo) {
+    mensagemDiv.textContent = texto;
+    mensagemDiv.className = `alert alert-${tipo}`;
+    mensagemDiv.style.display = 'block';
+    setTimeout(() => mensagemDiv.style.display = 'none', 4000);
+}
+
+function mostrarLoading(mostrar) {
+    loadingDiv.style.display = mostrar ? 'block' : 'none';
+    cartaoInput.disabled = mostrar;
+    btnLimpar.disabled = mostrar;
+}
+
+function limparTudo() {
+    cartaoInput.value = '';
+    infoDiv.style.display = 'none';
+    btnRegistrar.disabled = true;
+    funcionarioAtual = null;
+    ultimoCartaoBuscado = null;
+    cartaoInput.focus();
+
+    statusIndicator.style.background = '#48bb78';
+    statusTexto.textContent = 'Pronto para leitura';
+}
+
+// ============================================
+// EVENTOS
+// ============================================
+
+window.onload = function() {
+    cartaoInput.focus();
+    statusIndicator.style.background = '#48bb78';
+    statusTexto.textContent = 'Pronto para leitura';
+};
+
+// 🔥 AQUI ESTÁ A MÁGICA
+cartaoInput.addEventListener('input', function() {
+
+    const valor = this.value.trim();
+
+    clearTimeout(debounceTimer);
+
+    if (!valor) {
+        limparTudo();
+        return;
+    }
+
+    debounceTimer = setTimeout(() => {
+        buscarFuncionarioAutomatico(valor);
+    }, 300); // 300ms após parar de digitar
+});
+
+// Mantém Enter funcionando também
+cartaoInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        buscarFuncionarioAutomatico(this.value.trim());
+    }
+});
+
+btnRegistrar.addEventListener('click', registrarPonto);
+btnLimpar.addEventListener('click', limparTudo);
+
+document.addEventListener('click', function(e) {
+    if (!e.target.matches('button, input, .btn, .status-badge')) {
+        cartaoInput.focus();
+    }
+});    </script>
 </body>
 </html>
