@@ -23,7 +23,7 @@
         
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 1200px;
         }
         
         .card {
@@ -48,18 +48,32 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
         }
         
         .header h1 {
-            margin-bottom: 10px;
-            font-size: 28px;
+            margin-bottom: 5px;
+            font-size: 24px;
             font-weight: 600;
         }
         
         .body {
             padding: 30px;
+        }
+        
+        /* LAYOUT DE DUAS COLUNAS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        /* COLUNA ESQUERDA - CAMPO RFID E BOTÕES */
+        .left-col {
+            padding-right: 20px;
+            border-right: 2px solid #e2e8f0;
         }
         
         .campo-rfid {
@@ -94,14 +108,77 @@
             background: white;
         }
         
+        .botoes {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        
+        .btn-secondary {
+            background: #a0aec0;
+            color: white;
+            box-shadow: 0 4px 15px rgba(160,174,192,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+        }
+        
+        /* COLUNA DIREITA - DADOS DO FUNCIONÁRIO */
+        .right-col {
+            padding-left: 20px;
+        }
+        
         .info-funcionario {
             background: #f8fafc;
             border-radius: 15px;
             padding: 25px;
-            margin: 20px 0;
             display: none;
             border-left: 6px solid #48bb78;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .info-header {
+            margin-bottom: 20px;
+            color: #2c5282;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-badge {
+            background: #48bb78;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
         }
         
         .info-item {
@@ -158,49 +235,7 @@
             border: 2px solid #a0aec0;
         }
         
-        .botoes {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
-        }
-        
-        .btn-secondary {
-            background: #a0aec0;
-            color: white;
-            box-shadow: 0 4px 15px rgba(160,174,192,0.4);
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
-        }
-        
+        /* MENSAGENS E LOADING (OCUPAM LARGURA TOTAL) */
         .alert {
             padding: 16px;
             border-radius: 12px;
@@ -208,6 +243,7 @@
             display: none;
             font-weight: 500;
             animation: fadeIn 0.3s ease;
+            grid-column: 1 / -1;
         }
         
         @keyframes fadeIn {
@@ -243,6 +279,7 @@
             text-align: center;
             padding: 20px;
             display: none;
+            grid-column: 1 / -1;
         }
         
         .spinner {
@@ -266,8 +303,12 @@
             border-radius: 30px;
             font-size: 14px;
             color: #4a5568;
-            display: inline-block;
-            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            grid-column: 1 / -1;
         }
         
         .footer {
@@ -285,6 +326,28 @@
             font-size: 14px;
             border: 1px solid #4a5568;
         }
+
+        .hint {
+            text-align: center;
+            margin-top: 12px;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .left-col {
+                padding-right: 0;
+                border-right: none;
+            }
+            
+            .right-col {
+                padding-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -296,85 +359,92 @@
             </div>
             
             <div class="body">
-                <!-- Mensagens -->
+                <!-- Mensagens (ocupa largura total) -->
                 <div id="mensagem" class="alert" style="display: none;"></div>
                 
-                <!-- Loading -->
+                <!-- Loading (ocupa largura total) -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
                     <p style="color: #4a5568; font-weight: 600;">Conectando à planilha...</p>
                 </div>
                 
-                <!-- Campo RFID -->
-                <div class="campo-rfid">
-                    <label>📇 NÚMERO DO CARTÃO RFID</label>
-                    <input type="text" 
-                           id="cartaoRFID" 
-                           placeholder="Digite ou passe o cartão"
-                           autocomplete="off"
-                           autofocus>
-                    <div style="text-align: center; margin-top: 12px; color: #718096;">
-                        Pressione <kbd>Enter</kbd> para buscar
+                <!-- Grid de 2 colunas -->
+                <div class="grid-2">
+                    <!-- COLUNA ESQUERDA: Campo RFID e Botões -->
+                    <div class="left-col">
+                        <div class="campo-rfid">
+                            <label>📇 NÚMERO DO CARTÃO RFID</label>
+                            <input type="text" 
+                                   id="cartaoRFID" 
+                                   placeholder="Digite ou passe o cartão"
+                                   autocomplete="off"
+                                   autofocus>
+                            <div class="hint">
+                                Pressione <kbd>Enter</kbd> ou aguarde a busca automática
+                            </div>
+                        </div>
+                        
+                        <!-- Botões -->
+                        <div class="botoes">
+                            <button id="btnLimpar" class="btn btn-secondary">
+                                🧹 LIMPAR
+                            </button>
+                            <button id="btnRegistrar" class="btn btn-primary" disabled>
+                                ✅ REGISTRAR PONTO
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- COLUNA DIREITA: Informações do Funcionário -->
+                    <div class="right-col">
+                        <div id="infoFuncionario" class="info-funcionario">
+                            <div class="info-header">
+                                <span class="info-badge">ENCONTRADO</span>
+                                <h3 style="margin:0; color: #2c5282;">Dados do Funcionário</h3>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Nome:</span>
+                                <span class="info-value" id="nomeFuncionario">-</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Matrícula:</span>
+                                <span class="info-value" id="matriculaFuncionario">-</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Data:</span>
+                                <span class="info-value" id="dataAtual">-</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Hora:</span>
+                                <span class="info-value" id="horaAtual">-</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Entrada Oficial:</span>
+                                <span class="info-value" id="entradaOficial">-</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">Saída Oficial:</span>
+                                <span class="info-value" id="saidaOficial">-</span>
+                            </div>
+                            
+                            <div class="info-item" style="border-bottom: none;">
+                                <span class="info-label">Tipo de Registro:</span>
+                                <span id="tipoRegistro" style="display: inline-block;"></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Informações do Funcionário -->
-                <div id="infoFuncionario" class="info-funcionario">
-                    <h3 style="margin-bottom: 20px; color: #2c5282; display: flex; align-items: center; gap: 10px;">
-                        <span style="background: #48bb78; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px;">ENCONTRADO</span>
-                        Dados do Funcionário
-                    </h3>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Nome:</span>
-                        <span class="info-value" id="nomeFuncionario">-</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Matrícula:</span>
-                        <span class="info-value" id="matriculaFuncionario">-</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Data:</span>
-                        <span class="info-value" id="dataAtual">-</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Hora:</span>
-                        <span class="info-value" id="horaAtual">-</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Entrada Oficial:</span>
-                        <span class="info-value" id="entradaOficial">-</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">Saída Oficial:</span>
-                        <span class="info-value" id="saidaOficial">-</span>
-                    </div>
-                    
-                    <div class="info-item" style="border-bottom: none;">
-                        <span class="info-label">Tipo de Registro:</span>
-                        <span id="tipoRegistro" style="display: inline-block;"></span>
-                    </div>
-                </div>
-                
-                <!-- Botões -->
-                <div class="botoes">
-                    <button id="btnLimpar" class="btn btn-secondary">
-                        🧹 LIMPAR
-                    </button>
-                    <button id="btnRegistrar" class="btn btn-primary" disabled>
-                        ✅ REGISTRAR PONTO
-                    </button>
-                </div>
-                
-                <!-- Status da API -->
-                <div id="statusAPI" class="status-badge" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span id="statusIndicator" style="width: 10px; height: 10px; background: #fbbf24; border-radius: 50%; display: inline-block;"></span>
-                    <span id="statusTexto">Inicializando...</span>
+                <!-- Status da API (ocupa largura total) -->
+                <div id="statusAPI" class="status-badge">
+                    <span id="statusIndicator" style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%; display: inline-block;"></span>
+                    <span id="statusTexto">Pronto para leitura</span>
                 </div>
             </div>
         </div>
@@ -385,249 +455,237 @@
         </div>
     </div>
 
-        <script>
-const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwrFc_SoRUIHG_RDoGAhY4lE5YLVjH-8KqlNQViQBPpjhHcwtgaOm4K8eXbeIfADA-DCQ/exec';
+    <script>
+        const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwrFc_SoRUIHG_RDoGAhY4lE5YLVjH-8KqlNQViQBPpjhHcwtgaOm4K8eXbeIfADA-DCQ/exec';
 
-let funcionarioAtual = null;
-let debounceTimer = null;
-let ultimoCartaoBuscado = null;
+        let funcionarioAtual = null;
+        let debounceTimer = null;
+        let ultimoCartaoBuscado = null;
 
-const cartaoInput = document.getElementById('cartaoRFID');
-const btnRegistrar = document.getElementById('btnRegistrar');
-const btnLimpar = document.getElementById('btnLimpar');
-const infoDiv = document.getElementById('infoFuncionario');
-const mensagemDiv = document.getElementById('mensagem');
-const loadingDiv = document.getElementById('loading');
-const statusIndicator = document.getElementById('statusIndicator');
-const statusTexto = document.getElementById('statusTexto');
+        const cartaoInput = document.getElementById('cartaoRFID');
+        const btnRegistrar = document.getElementById('btnRegistrar');
+        const btnLimpar = document.getElementById('btnLimpar');
+        const infoDiv = document.getElementById('infoFuncionario');
+        const mensagemDiv = document.getElementById('mensagem');
+        const loadingDiv = document.getElementById('loading');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusTexto = document.getElementById('statusTexto');
 
-// ============================================
-// JSONP
-// ============================================
-function chamarAPI(params) {
-    return new Promise((resolve, reject) => {
+        // ============================================
+        // JSONP
+        // ============================================
+        function chamarAPI(params) {
+            return new Promise((resolve, reject) => {
+                const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-        const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                    clearTimeout(timeout);
+                    resolve(data);
+                };
 
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            document.head.removeChild(script);
-            clearTimeout(timeout);
-            resolve(data);
+                const urlParams = new URLSearchParams();
+                Object.keys(params).forEach(key => {
+                    if (params[key] !== undefined && params[key] !== null) {
+                        urlParams.append(key, params[key]);
+                    }
+                });
+
+                urlParams.append('callback', callbackName);
+
+                const script = document.createElement('script');
+                script.src = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
+                script.async = true;
+
+                const timeout = setTimeout(() => {
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                    reject(new Error('Timeout'));
+                }, 15000);
+
+                script.onerror = () => {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    document.head.removeChild(script);
+                    reject(new Error('Erro de rede'));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // ============================================
+        // BUSCA AUTOMÁTICA (SEM ENTER)
+        // ============================================
+        async function buscarFuncionarioAutomatico(cartao) {
+            if (!cartao || cartao.length < 3) return;
+            if (cartao === ultimoCartaoBuscado) return;
+
+            ultimoCartaoBuscado = cartao;
+
+            mostrarLoading(true);
+            infoDiv.style.display = 'none';
+            btnRegistrar.disabled = true;
+
+            statusIndicator.style.background = '#fbbf24';
+            statusTexto.textContent = `Buscando cartão ${cartao}...`;
+
+            try {
+                const resultado = await chamarAPI({
+                    acao: 'buscar',
+                    cartao: cartao
+                });
+
+                if (resultado.success) {
+                    funcionarioAtual = resultado;
+                    processarResultado(resultado);
+                    statusIndicator.style.background = '#48bb78';
+                    statusTexto.textContent = 'Funcionário encontrado';
+                } else {
+                    limparTudo();
+                    mostrarMensagem(resultado.message || 'Cartão não encontrado!', 'danger');
+                    statusIndicator.style.background = '#f56565';
+                    statusTexto.textContent = 'Cartão não encontrado';
+                }
+            } catch (error) {
+                mostrarMensagem('Erro ao consultar planilha.', 'danger');
+                statusIndicator.style.background = '#f56565';
+                statusTexto.textContent = 'Erro na consulta';
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // ============================================
+        // PROCESSAR RESULTADO
+        // ============================================
+        function processarResultado(dados) {
+            document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || '-';
+            document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || '-';
+            document.getElementById('dataAtual').textContent = dados.dataAtual;
+            document.getElementById('horaAtual').textContent = dados.horaAtual;
+            document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || '-';
+            document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || '-';
+
+            const tipoSpan = document.getElementById('tipoRegistro');
+            tipoSpan.className = '';
+
+            if (dados.tipoRegistro === 'Entrada') {
+                tipoSpan.className = 'status-entrada';
+                tipoSpan.textContent = '📥 ENTRADA';
+                btnRegistrar.disabled = false;
+            } 
+            else if (dados.tipoRegistro === 'Saída') {
+                tipoSpan.className = 'status-saida';
+                tipoSpan.textContent = '📤 SAÍDA';
+                btnRegistrar.disabled = false;
+            } 
+            else {
+                tipoSpan.className = 'status-finalizado';
+                tipoSpan.textContent = '✅ FINALIZADO';
+                btnRegistrar.disabled = true;
+            }
+
+            infoDiv.style.display = 'block';
+        }
+
+        // ============================================
+        // REGISTRAR
+        // ============================================
+        async function registrarPonto() {
+            if (!funcionarioAtual) return;
+
+            mostrarLoading(true);
+
+            try {
+                const resultado = await chamarAPI({
+                    acao: 'salvar',
+                    cartao: funcionarioAtual.funcionario.cartao,
+                    nome: funcionarioAtual.funcionario.nome,
+                    matricula: funcionarioAtual.funcionario.matricula
+                });
+
+                if (resultado.success) {
+                    mostrarMensagem('✅ Ponto registrado com sucesso!', 'success');
+                    setTimeout(limparTudo, 2000);
+                } else {
+                    mostrarMensagem(resultado.message, 'danger');
+                }
+            } catch (error) {
+                mostrarMensagem('Erro ao registrar.', 'danger');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // ============================================
+        // UTILITÁRIOS
+        // ============================================
+        function mostrarMensagem(texto, tipo) {
+            mensagemDiv.textContent = texto;
+            mensagemDiv.className = `alert alert-${tipo}`;
+            mensagemDiv.style.display = 'block';
+            setTimeout(() => mensagemDiv.style.display = 'none', 4000);
+        }
+
+        function mostrarLoading(mostrar) {
+            loadingDiv.style.display = mostrar ? 'block' : 'none';
+            cartaoInput.disabled = mostrar;
+            btnLimpar.disabled = mostrar;
+        }
+
+        function limparTudo() {
+            cartaoInput.value = '';
+            infoDiv.style.display = 'none';
+            btnRegistrar.disabled = true;
+            funcionarioAtual = null;
+            ultimoCartaoBuscado = null;
+            cartaoInput.focus();
+
+            statusIndicator.style.background = '#48bb78';
+            statusTexto.textContent = 'Pronto para leitura';
+        }
+
+        // ============================================
+        // EVENTOS
+        // ============================================
+        window.onload = function() {
+            cartaoInput.focus();
+            statusIndicator.style.background = '#48bb78';
+            statusTexto.textContent = 'Pronto para leitura';
         };
 
-        const urlParams = new URLSearchParams();
-        Object.keys(params).forEach(key => {
-            if (params[key] !== undefined && params[key] !== null) {
-                urlParams.append(key, params[key]);
+        cartaoInput.addEventListener('input', function() {
+            const valor = this.value.trim();
+
+            clearTimeout(debounceTimer);
+
+            if (!valor) {
+                limparTudo();
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                buscarFuncionarioAutomatico(valor);
+            }, 300);
+        });
+
+        cartaoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarFuncionarioAutomatico(this.value.trim());
             }
         });
 
-        urlParams.append('callback', callbackName);
+        btnRegistrar.addEventListener('click', registrarPonto);
+        btnLimpar.addEventListener('click', limparTudo);
 
-        const script = document.createElement('script');
-        script.src = `${URL_APPS_SCRIPT}?${urlParams.toString()}`;
-        script.async = true;
-
-        const timeout = setTimeout(() => {
-            delete window[callbackName];
-            document.head.removeChild(script);
-            reject(new Error('Timeout'));
-        }, 15000);
-
-        script.onerror = () => {
-            clearTimeout(timeout);
-            delete window[callbackName];
-            document.head.removeChild(script);
-            reject(new Error('Erro de rede'));
-        };
-
-        document.head.appendChild(script);
-    });
-}
-
-// ============================================
-// BUSCA AUTOMÁTICA (SEM ENTER)
-// ============================================
-async function buscarFuncionarioAutomatico(cartao) {
-
-    if (!cartao || cartao.length < 3) return;
-
-    if (cartao === ultimoCartaoBuscado) return; // evita busca duplicada
-
-    ultimoCartaoBuscado = cartao;
-
-    mostrarLoading(true);
-    infoDiv.style.display = 'none';
-    btnRegistrar.disabled = true;
-
-    statusIndicator.style.background = '#fbbf24';
-    statusTexto.textContent = `Buscando cartão ${cartao}...`;
-
-    try {
-
-        const resultado = await chamarAPI({
-            acao: 'buscar',
-            cartao: cartao
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('button, input, .btn, .status-badge')) {
+                cartaoInput.focus();
+            }
         });
-
-        if (resultado.success) {
-            funcionarioAtual = resultado;
-            processarResultado(resultado);
-            statusIndicator.style.background = '#48bb78';
-            statusTexto.textContent = 'Funcionário encontrado';
-        } else {
-            limparTudo();
-            mostrarMensagem(resultado.message || 'Cartão não encontrado!', 'danger');
-            statusIndicator.style.background = '#f56565';
-            statusTexto.textContent = 'Cartão não encontrado';
-        }
-
-    } catch (error) {
-        mostrarMensagem('Erro ao consultar planilha.', 'danger');
-        statusIndicator.style.background = '#f56565';
-        statusTexto.textContent = 'Erro na consulta';
-    } finally {
-        mostrarLoading(false);
-    }
-}
-
-// ============================================
-// PROCESSAR RESULTADO
-// ============================================
-function processarResultado(dados) {
-
-    document.getElementById('nomeFuncionario').textContent = dados.funcionario.nome || '-';
-    document.getElementById('matriculaFuncionario').textContent = dados.funcionario.matricula || '-';
-    document.getElementById('dataAtual').textContent = dados.dataAtual;
-    document.getElementById('horaAtual').textContent = dados.horaAtual;
-    document.getElementById('entradaOficial').textContent = dados.funcionario.entradaOficial || '-';
-    document.getElementById('saidaOficial').textContent = dados.funcionario.saidaOficial || '-';
-
-    const tipoSpan = document.getElementById('tipoRegistro');
-    tipoSpan.className = '';
-
-    if (dados.tipoRegistro === 'Entrada') {
-        tipoSpan.className = 'status-entrada';
-        tipoSpan.textContent = '📥 ENTRADA';
-        btnRegistrar.disabled = false;
-    } 
-    else if (dados.tipoRegistro === 'Saída') {
-        tipoSpan.className = 'status-saida';
-        tipoSpan.textContent = '📤 SAÍDA';
-        btnRegistrar.disabled = false;
-    } 
-    else {
-        tipoSpan.className = 'status-finalizado';
-        tipoSpan.textContent = '✅ FINALIZADO';
-        btnRegistrar.disabled = true;
-    }
-
-    infoDiv.style.display = 'block';
-}
-
-// ============================================
-// REGISTRAR
-// ============================================
-async function registrarPonto() {
-
-    if (!funcionarioAtual) return;
-
-    mostrarLoading(true);
-
-    try {
-
-        const resultado = await chamarAPI({
-            acao: 'salvar',
-            cartao: funcionarioAtual.funcionario.cartao,
-            nome: funcionarioAtual.funcionario.nome,
-            matricula: funcionarioAtual.funcionario.matricula
-        });
-
-        if (resultado.success) {
-            mostrarMensagem('✅ Ponto registrado com sucesso!', 'success');
-            setTimeout(limparTudo, 2000);
-        } else {
-            mostrarMensagem(resultado.message, 'danger');
-        }
-
-    } catch (error) {
-        mostrarMensagem('Erro ao registrar.', 'danger');
-    } finally {
-        mostrarLoading(false);
-    }
-}
-
-// ============================================
-// UTILITÁRIOS
-// ============================================
-function mostrarMensagem(texto, tipo) {
-    mensagemDiv.textContent = texto;
-    mensagemDiv.className = `alert alert-${tipo}`;
-    mensagemDiv.style.display = 'block';
-    setTimeout(() => mensagemDiv.style.display = 'none', 4000);
-}
-
-function mostrarLoading(mostrar) {
-    loadingDiv.style.display = mostrar ? 'block' : 'none';
-    cartaoInput.disabled = mostrar;
-    btnLimpar.disabled = mostrar;
-}
-
-function limparTudo() {
-    cartaoInput.value = '';
-    infoDiv.style.display = 'none';
-    btnRegistrar.disabled = true;
-    funcionarioAtual = null;
-    ultimoCartaoBuscado = null;
-    cartaoInput.focus();
-
-    statusIndicator.style.background = '#48bb78';
-    statusTexto.textContent = 'Pronto para leitura';
-}
-
-// ============================================
-// EVENTOS
-// ============================================
-
-window.onload = function() {
-    cartaoInput.focus();
-    statusIndicator.style.background = '#48bb78';
-    statusTexto.textContent = 'Pronto para leitura';
-};
-
-// 🔥 AQUI ESTÁ A MÁGICA
-cartaoInput.addEventListener('input', function() {
-
-    const valor = this.value.trim();
-
-    clearTimeout(debounceTimer);
-
-    if (!valor) {
-        limparTudo();
-        return;
-    }
-
-    debounceTimer = setTimeout(() => {
-        buscarFuncionarioAutomatico(valor);
-    }, 300); // 300ms após parar de digitar
-});
-
-// Mantém Enter funcionando também
-cartaoInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        buscarFuncionarioAutomatico(this.value.trim());
-    }
-});
-
-btnRegistrar.addEventListener('click', registrarPonto);
-btnLimpar.addEventListener('click', limparTudo);
-
-document.addEventListener('click', function(e) {
-    if (!e.target.matches('button, input, .btn, .status-badge')) {
-        cartaoInput.focus();
-    }
-});    </script>
+    </script>
 </body>
 </html>
